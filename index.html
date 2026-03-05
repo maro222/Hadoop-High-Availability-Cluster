@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hadoop HA Cluster — ITI Project</title>
+  <meta name="description" content="Hadoop High Availability Cluster architecture diagram. ITI Project under supervision of Eng. Youssef Etman." />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0f1e; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const palette = {
+      bg: "#0a0f1e",
+      panel: "#0d1628",
+      border: "#1a2a4a",
+      active: "#00e5ff",
+      standby: "#ff9d00",
+      worker: "#39ff7a",
+      zk: "#bf5fff",
+      journal: "#ff4f7b",
+      zkfc: "#00cfff",
+      rm: "#ffdd57",
+      text: "#c9d8f0",
+      dim: "#4a6080",
+      glow: (color) => `0 0 12px ${color}88, 0 0 30px ${color}33`,
+    };
+
+    const Badge = ({ label, color, small }) => (
+      <span style={{
+        display: "inline-block",
+        padding: small ? "1px 7px" : "2px 10px",
+        borderRadius: 20,
+        border: `1px solid ${color}`,
+        color: color,
+        fontSize: small ? 9 : 10,
+        fontFamily: "'JetBrains Mono', monospace",
+        letterSpacing: 1,
+        background: `${color}11`,
+        whiteSpace: "nowrap",
+        boxShadow: `0 0 6px ${color}44`,
+      }}>{label}</span>
+    );
+
+    const Port = ({ port, color }) => (
+      <span style={{
+        fontSize: 9,
+        fontFamily: "'JetBrains Mono', monospace",
+        color: color || palette.dim,
+        background: "#ffffff08",
+        border: `1px solid ${(color || palette.dim) + "44"}`,
+        borderRadius: 3,
+        padding: "0 4px",
+      }}>:{port}</span>
+    );
+
+    const MasterNode = ({ id, name, isActive, selected, onSelect }) => {
+      const color = isActive ? palette.active : palette.standby;
+      return (
+        <div
+          style={{
+            background: `${color}08`,
+            border: `2px solid ${selected ? color : color + "44"}`,
+            borderRadius: 16,
+            padding: 16,
+            width: 210,
+            boxShadow: selected ? palette.glow(color) : "none",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+            position: "relative",
+          }}
+          onClick={() => onSelect(id)}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, color, fontFamily: "'JetBrains Mono', monospace" }}>{name}</div>
+              <div style={{ fontSize: 9, color: palette.dim, fontFamily: "'JetBrains Mono', monospace" }}>master node</div>
+            </div>
+            <Badge label={isActive ? "ACTIVE" : "STANDBY"} color={color} />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ background: `${palette.active}11`, border: `1px solid ${palette.active}44`, borderRadius: 8, padding: "7px 10px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: palette.active, fontFamily: "'JetBrains Mono', monospace" }}>NameNode</div>
+              <div style={{ display: "flex", gap: 4, marginTop: 4, flexWrap: "wrap" }}>
+                <Port port="9870" color={palette.active} />
+                <Port port="8020" color={palette.active} />
+              </div>
+            </div>
+            <div style={{ background: `${palette.rm}11`, border: `1px solid ${palette.rm}44`, borderRadius: 8, padding: "7px 10px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: palette.rm, fontFamily: "'JetBrains Mono', monospace" }}>ResourceManager</div>
+              <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                <Port port="8088" color={palette.rm} />
+                <Port port="8033" color={palette.rm} />
+              </div>
+            </div>
+            <div style={{ background: `${palette.zkfc}11`, border: `1px solid ${palette.zkfc}44`, borderRadius: 8, padding: "7px 10px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: palette.zkfc, fontFamily: "'JetBrains Mono', monospace" }}>ZKFC</div>
+              <div style={{ fontSize: 9, color: palette.dim, marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>DFSZKFailoverController</div>
+            </div>
+            <div style={{ background: `${palette.journal}11`, border: `1px solid ${palette.journal}44`, borderRadius: 8, padding: "7px 10px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: palette.journal, fontFamily: "'JetBrains Mono', monospace" }}>JournalNode</div>
+              <Port port="8485" color={palette.journal} />
+            </div>
+            <div style={{ background: `${palette.zk}11`, border: `1px solid ${palette.zk}44`, borderRadius: 8, padding: "7px 10px" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: palette.zk, fontFamily: "'JetBrains Mono', monospace" }}>ZooKeeper</div>
+              <div style={{ display: "flex", gap: 4, marginTop: 4, flexWrap: "wrap" }}>
+                <Port port="2181" color={palette.zk} />
+                <Port port="2888" color={palette.zk} />
+                <Port port="3888" color={palette.zk} />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const WorkerNode = ({ name, hasZK, selected, onSelect }) => (
+      <div
+        onClick={onSelect}
+        style={{
+          background: `${palette.worker}08`,
+          border: `2px solid ${selected ? palette.worker : palette.worker + "33"}`,
+          borderRadius: 16,
+          padding: 14,
+          width: 155,
+          boxShadow: selected ? palette.glow(palette.worker) : "none",
+          transition: "all 0.3s ease",
+          cursor: "pointer",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: palette.worker, fontFamily: "'JetBrains Mono', monospace" }}>{name}</div>
+            <div style={{ fontSize: 9, color: palette.dim, fontFamily: "'JetBrains Mono', monospace" }}>worker node</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          <div style={{ background: `${palette.worker}11`, border: `1px solid ${palette.worker}33`, borderRadius: 7, padding: "6px 9px" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: palette.worker, fontFamily: "'JetBrains Mono', monospace" }}>DataNode</div>
+          </div>
+          <div style={{ background: `${palette.rm}11`, border: `1px solid ${palette.rm}33`, borderRadius: 7, padding: "6px 9px" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: palette.rm, fontFamily: "'JetBrains Mono', monospace" }}>NodeManager</div>
+          </div>
+          {hasZK && (
+            <>
+              <div style={{ background: `${palette.journal}11`, border: `1px solid ${palette.journal}33`, borderRadius: 7, padding: "6px 9px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: palette.journal, fontFamily: "'JetBrains Mono', monospace" }}>JournalNode</div>
+                <Port port="8485" color={palette.journal} />
+              </div>
+              <div style={{ background: `${palette.zk}11`, border: `1px solid ${palette.zk}33`, borderRadius: 7, padding: "6px 9px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: palette.zk, fontFamily: "'JetBrains Mono', monospace" }}>ZooKeeper</div>
+                <div style={{ display: "flex", gap: 3, marginTop: 3, flexWrap: "wrap" }}>
+                  <Port port="2181" color={palette.zk} />
+                  <Port port="2888" color={palette.zk} />
+                  <Port port="3888" color={palette.zk} />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+
+    const ConnLine = ({ label, color }) => (
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ width: 24, height: 2, background: `linear-gradient(90deg, ${color}, ${color}88)`, borderRadius: 2 }} />
+        <span style={{ fontSize: 9, color, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>{label}</span>
+      </div>
+    );
+
+    const InfoPanel = ({ selected }) => {
+      const info = {
+        master1: {
+          title: "master1 — Active NameNode",
+          color: palette.active,
+          items: [
+            "Serves all HDFS client read/write requests",
+            "Writes edit logs to all 3 JournalNodes",
+            "ZKFC holds the ZooKeeper ActiveStandbyElectorLock",
+            "ResourceManager rm1 handles YARN scheduling",
+            "ZooKeeper server.1 participates in quorum voting",
+          ]
+        },
+        master2: {
+          title: "master2 — Standby NameNode",
+          color: palette.standby,
+          items: [
+            "Continuously reads edits from JournalNodes to stay in sync",
+            "ZKFC monitors NameNode health via local health checks",
+            "On failover: ZKFC acquires ZK lock → becomes Active",
+            "ResourceManager rm2 takes over if rm1 fails (via ZK state store)",
+            "ZooKeeper server.2 participates in quorum voting",
+          ]
+        },
+        worker1: {
+          title: "worker1 — Mixed Role Worker",
+          color: palette.worker,
+          items: [
+            "DataNode: stores actual HDFS data blocks",
+            "NodeManager: executes YARN containers/tasks",
+            "JournalNode: receives and stores NameNode edit logs",
+            "ZooKeeper server.3 — completes the 3-node quorum",
+            "Most loaded node due to mixed roles",
+          ]
+        },
+        worker2: {
+          title: "worker2 — Data Worker",
+          color: palette.worker,
+          items: [
+            "DataNode: stores HDFS data blocks (replication=1)",
+            "NodeManager: executes YARN containers/tasks",
+            "No ZooKeeper or JournalNode role",
+            "Dedicated to pure data processing workloads",
+          ]
+        },
+        worker3: {
+          title: "worker3 — Data Worker",
+          color: palette.worker,
+          items: [
+            "DataNode: stores HDFS data blocks (replication=1)",
+            "NodeManager: executes YARN containers/tasks",
+            "No ZooKeeper or JournalNode role",
+            "Dedicated to pure data processing workloads",
+          ]
+        },
+      };
+
+      const d = selected ? info[selected] : null;
+
+      return (
+        <div style={{
+          background: palette.panel,
+          border: `1px solid ${d ? d.color + "44" : palette.border}`,
+          borderRadius: 14,
+          padding: 18,
+          minHeight: 160,
+          transition: "border-color 0.3s ease",
+          boxShadow: d ? `inset 0 0 30px ${d.color}08` : "none",
+        }}>
+          {d ? (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 800, color: d.color, fontFamily: "'JetBrains Mono', monospace", marginBottom: 12 }}>
+                ❯ {d.title}
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 16 }}>
+                {d.items.map((item, i) => (
+                  <li key={i} style={{ color: palette.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, lineHeight: 1.5 }}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <div style={{ color: palette.dim, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", paddingTop: 10 }}>
+              ← Click any node to inspect its role and responsibilities
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    function HadoopClusterDiagram() {
+      const [selected, setSelected] = useState(null);
+      const toggle = (id) => setSelected(prev => prev === id ? null : id);
+
+      return (
+        <div style={{
+          minHeight: "100vh",
+          background: palette.bg,
+          padding: "30px 24px",
+          fontFamily: "'JetBrains Mono', monospace",
+          backgroundImage: `radial-gradient(ellipse at 20% 20%, #0d2040 0%, transparent 60%),
+                            radial-gradient(ellipse at 80% 80%, #1a0a2e 0%, transparent 60%)`,
+        }}>
+          <style>{`
+            * { box-sizing: border-box; }
+            ::-webkit-scrollbar { width: 6px; }
+            ::-webkit-scrollbar-track { background: #0a0f1e; }
+            ::-webkit-scrollbar-thumb { background: #1a2a4a; border-radius: 3px; }
+            @keyframes flow { 0% { stroke-dashoffset: 20 } 100% { stroke-dashoffset: 0 } }
+          `}</style>
+
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: 30 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: palette.active, letterSpacing: 2, textShadow: palette.glow(palette.active) }}>
+              HADOOP HIGH AVAILABILITY CLUSTER
+            </div>
+            <div style={{ fontSize: 11, color: palette.dim, marginTop: 4, letterSpacing: 3 }}>
+              ITI PROJECT · ENG. YOUSSEF ETMAN · 5 NODES · DOCKER
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", marginBottom: 28 }}>
+            <ConnLine label="HDFS Edit Sync"     color={palette.journal} />
+            <ConnLine label="ZK Coordination"    color={palette.zk}      />
+            <ConnLine label="NN Failover (ZKFC)" color={palette.zkfc}    />
+            <ConnLine label="Block Reports"      color={palette.worker}  />
+            <ConnLine label="YARN Scheduling"    color={palette.rm}      />
+          </div>
+
+          {/* ZooKeeper Quorum Banner */}
+          <div style={{
+            background: `${palette.zk}0a`, border: `1px dashed ${palette.zk}55`,
+            borderRadius: 12, padding: "8px 16px", textAlign: "center",
+            marginBottom: 20, fontSize: 10, color: palette.zk, letterSpacing: 2,
+          }}>
+            ◈ ZOOKEEPER QUORUM — master1:2181 · master2:2181 · worker1:2181 ◈
+          </div>
+
+          {/* JournalNode Banner */}
+          <div style={{
+            background: `${palette.journal}0a`, border: `1px dashed ${palette.journal}55`,
+            borderRadius: 12, padding: "8px 16px", textAlign: "center",
+            marginBottom: 28, fontSize: 10, color: palette.journal, letterSpacing: 2,
+          }}>
+            ◈ JOURNALNODE QUORUM — master1:8485 · master2:8485 · worker1:8485 ◈
+          </div>
+
+          {/* ZKFC failover arrow */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <div style={{ fontSize: 9, color: palette.zkfc, letterSpacing: 1 }}>ZKFC AUTO-FAILOVER</div>
+            <svg width="120" height="16">
+              <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill={palette.zkfc} />
+                </marker>
+              </defs>
+              <line x1="0" y1="8" x2="114" y2="8"
+                stroke={palette.zkfc} strokeWidth="1.5"
+                strokeDasharray="4 2" markerEnd="url(#arr)"
+                style={{ animation: "flow 0.8s linear infinite" }} />
+            </svg>
+            <div style={{ fontSize: 9, color: palette.zkfc, letterSpacing: 1 }}>ACTIVE ↔ STANDBY</div>
+          </div>
+
+          {/* Master Nodes Row */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 24, marginBottom: 28, flexWrap: "wrap" }}>
+            <MasterNode id="master1" name="master1" isActive={true}  selected={selected === "master1"} onSelect={toggle} />
+            <MasterNode id="master2" name="master2" isActive={false} selected={selected === "master2"} onSelect={toggle} />
+          </div>
+
+          {/* Block report connector */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <div style={{ width: 2, height: 20, background: `linear-gradient(${palette.worker}, ${palette.worker}44)` }} />
+              <div style={{ fontSize: 9, color: palette.worker, letterSpacing: 1 }}>Block Reports + Heartbeat</div>
+              <div style={{ width: 2, height: 20, background: `linear-gradient(${palette.worker}44, ${palette.worker})` }} />
+            </div>
+          </div>
+
+          {/* Worker Nodes Row */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginBottom: 30, flexWrap: "wrap" }}>
+            <WorkerNode name="worker1" hasZK={true}  selected={selected === "worker1"} onSelect={() => toggle("worker1")} />
+            <WorkerNode name="worker2" hasZK={false} selected={selected === "worker2"} onSelect={() => toggle("worker2")} />
+            <WorkerNode name="worker3" hasZK={false} selected={selected === "worker3"} onSelect={() => toggle("worker3")} />
+          </div>
+
+          {/* Info Panel */}
+          <div style={{ maxWidth: 700, margin: "0 auto 24px" }}>
+            <InfoPanel selected={selected} />
+          </div>
+
+          {/* Startup Order */}
+          <div style={{ maxWidth: 700, margin: "0 auto 24px" }}>
+            <div style={{ background: palette.panel, border: `1px solid ${palette.border}`, borderRadius: 14, padding: 18 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: palette.text, letterSpacing: 2, marginBottom: 14 }}>STARTUP ORDER</div>
+              <div style={{ display: "flex", gap: 0, flexWrap: "wrap" }}>
+                {[
+                  { step: "1", label: "ZooKeeper",    color: palette.zk,      note: "all nodes"    },
+                  { step: "2", label: "JournalNodes",  color: palette.journal, note: "all nodes"    },
+                  { step: "3", label: "Format ZK",     color: palette.zkfc,    note: "master1 once" },
+                  { step: "4", label: "Format NN",     color: palette.active,  note: "master1 once" },
+                  { step: "5", label: "NameNodes",     color: palette.active,  note: "master1→2"    },
+                  { step: "6", label: "ZKFC",          color: palette.zkfc,    note: "both masters" },
+                  { step: "7", label: "YARN RM",       color: palette.rm,      note: "both masters" },
+                  { step: "8", label: "DataNode/NM",   color: palette.worker,  note: "workers"      },
+                ].map((s, i, arr) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: "50%",
+                        border: `2px solid ${s.color}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 11, fontWeight: 800, color: s.color,
+                        background: `${s.color}11`,
+                        boxShadow: `0 0 8px ${s.color}44`,
+                      }}>{s.step}</div>
+                      <div style={{ fontSize: 8, color: s.color, marginTop: 3, fontWeight: 700 }}>{s.label}</div>
+                      <div style={{ fontSize: 7, color: palette.dim, marginTop: 1 }}>{s.note}</div>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <div style={{ width: 18, height: 1, background: palette.border, margin: "0 4px", marginBottom: 18 }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center", fontSize: 9, color: palette.dim, letterSpacing: 2 }}>
+            HADOOP 3.4.2 · ZOOKEEPER 3.8.6 · REPLICATION FACTOR: 1
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<HadoopClusterDiagram />);
+  </script>
+</body>
+</html>
