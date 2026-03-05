@@ -153,17 +153,40 @@ yarn rmadmin -getAllServiceState
 
 ---
 ## Output
-![Cluster Diagram](./media/output-of-automated-script-for-cluster-run.png)
+
+### Running Hadoop Cluster through automated script
+![Cluster Diagram](./media/Output-of-automated-script-for-Cluster-run.png)
+
+### Active NameNode UI
 ![Cluster Diagram](./media/active-namenode.png)
+
+### Standby NameNode UI
 ![Cluster Diagram](./media/standby-namenode.png)
+
+### Yarn UI
 ![Cluster Diagram](./media/Yarn.png)
+
+### JournalNode UI
 ![Cluster Diagram](./media/journalnode.png)
+
+### Testing Automatic failover for HDFS
 ![Cluster Diagram](./media/Automatic-failover-of-NameNode.png)
+
+### Testing Automatic Failover for Yarn
 ![Cluster Diagram](./media/Automatic-failover-of-Yarn.png)
+
+### Ingesting Data
+![Cluster Diagram](./media/Ingesting-data.png)
+
+### Running MapReduce Job
 ![Cluster Diagram](./media/MR1.png)
 ![Cluster Diagram](./media/MR2.png)
 ![Cluster Diagram](./media/MR3.png)
+
+### Output of MapReduce Job
 ![Cluster Diagram](./media/MR4.png)
+![Cluster Diagram](./media/MR_output.png)
+
 ---
 
 
