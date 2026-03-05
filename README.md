@@ -21,7 +21,11 @@ This project sets up a fully functional **Hadoop High Availability cluster** usi
 | **worker3** | DataNode, NodeManager |
 
 
-![Cluster Architecture](./cluster-diagram.svg)
+## Cluster Architecture
+
+> 🔗 [View Interactive Diagram](https://maro222.github.io/hadoop-ha-cluster/)
+
+![Cluster Diagram](./cluster-diagram.svg)
 ---
 
 ## Prerequisites
