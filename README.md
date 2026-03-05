@@ -20,6 +20,8 @@ This project sets up a fully functional **Hadoop High Availability cluster** usi
 | **worker2** | DataNode, NodeManager |
 | **worker3** | DataNode, NodeManager |
 
+
+![Cluster Architecture](./cluster-diagram.svg)
 ---
 
 ## Prerequisites
