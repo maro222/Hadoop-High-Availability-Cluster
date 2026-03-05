@@ -23,7 +23,9 @@ This project sets up a fully functional **Hadoop High Availability cluster** usi
 
 ## Cluster Architecture
 
-> 🔗 [View Interactive Diagram](https://maro222.github.io/Hadoop-High-Availability-Cluster/media)
+> ## 🔗 [View Interactive Diagram](https://maro222.github.io/Hadoop-High-Availability-Cluster/media)
+
+
 
 ![Cluster Diagram](./media/Hadoop-Design-architecture.png)
 ![Cluster Diagram](./media/order-of-hadoop-process.png)
@@ -150,6 +152,20 @@ yarn rmadmin -getAllServiceState
 | `Configure_HA_Zookeeper.pdf` | ZooKeeper `zoo.cfg` settings and `zkfc` commands |
 
 ---
+## Output
+![Cluster Diagram](./media/output-of-automated-script-for-cluster-run.png)
+![Cluster Diagram](./media/active-namenode.png)
+![Cluster Diagram](./media/standby-namenode.png)
+![Cluster Diagram](./media/Yarn.png)
+![Cluster Diagram](./media/journalnode.png)
+![Cluster Diagram](./media/Automatic-failover-of-NameNode.png)
+![Cluster Diagram](./media/Automatic-failover-of-Yarn.png)
+![Cluster Diagram](./media/MR1.png)
+![Cluster Diagram](./media/MR2.png)
+![Cluster Diagram](./media/MR3.png)
+![Cluster Diagram](./media/MR4.png)
+---
+
 
 ## Important Notes
 
