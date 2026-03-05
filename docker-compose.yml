@@ -1,0 +1,107 @@
+version: "3.9"
+
+services:
+  master1:
+    image: hadoop-base-image
+    container_name: master1
+    hostname: master1
+    ports:
+      - "8481:8480" # JournalNode
+      - "9871:9870" # NameNode UI
+      - "8081:8088" # Resource Manager UI
+      - "2181:2181" # zk
+    command: >
+      bash -c "
+      echo 'source /etc/profile.d/hadoop.sh' >> /root/.bashrc &&
+      service ssh start && 
+      sleep infinity"
+    volumes:
+      - ./shared:/shared
+      - ./ssh_keys:/root/.ssh      # Shared SSH keys folder
+      - ./zoo_data/m1:/zoo_data  # Unique folder for ZK data    networks:
+    networks:
+      - cluster-network
+
+  master2:
+    image: hadoop-base-image
+    container_name: master2
+    hostname: master2
+    ports:
+      - "8482:8480"
+      - "9872:9870"
+      - "8082:8088"
+      - "2182:2181"
+    command: >
+      bash -c "
+      echo 'source /etc/profile.d/hadoop.sh' >> /root/.bashrc &&
+      service ssh start && 
+      sleep infinity"
+    volumes:
+      - ./shared:/shared
+      - ./ssh_keys:/root/.ssh
+      - ./zoo_data/m2:/zoo_data  # Unique folder for ZK data
+    networks:
+      - cluster-network
+
+  worker1:
+    image: hadoop-base-image
+    container_name: worker1
+    hostname: worker1
+    ports:
+      - "8483:8480"
+      - "9873:9870"
+      - "8083:8088"
+      - "2183:2181"
+    command: >
+      bash -c "
+      echo 'source /etc/profile.d/hadoop.sh' >> /root/.bashrc &&
+      service ssh start && 
+      sleep infinity"
+    volumes:
+      - ./shared:/shared
+      - ./ssh_keys:/root/.ssh
+      - ./zoo_data/w1:/zoo_data  # Unique folder for ZK data
+    networks:
+      - cluster-network
+
+  worker2:
+    image: hadoop-base-image
+    container_name: worker2
+    hostname: worker2
+    ports:
+      - "8484:8480"
+      - "9874:9870"
+      - "8084:8088"
+    command: >
+      bash -c "
+      echo 'source /etc/profile.d/hadoop.sh' >> /root/.bashrc &&
+      service ssh start && 
+      sleep infinity"
+    volumes:
+      - ./shared:/shared
+      - ./ssh_keys:/root/.ssh  
+    networks:
+      - cluster-network
+
+  worker3:
+    image: hadoop-base-image
+    container_name: worker3
+    hostname: worker3
+    ports:
+      - "8485:8480"
+      - "9875:9870"
+      - "8085:8088"
+    command: >
+      bash -c "
+      echo 'source /etc/profile.d/hadoop.sh' >> /root/.bashrc &&
+      service ssh start && 
+      sleep infinity"
+    volumes:
+      - ./shared:/shared
+      - ./ssh_keys:/root/.ssh  
+    networks:
+      - cluster-network
+
+networks:
+  cluster-network:
+    driver: bridge
