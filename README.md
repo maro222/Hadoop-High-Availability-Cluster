@@ -27,7 +27,6 @@ This project sets up a fully functional **Hadoop High Availability cluster** usi
 
 ![Cluster Diagram](./media/hadoop Design architecture.png)
 ![Cluster Diagram](./media/order of hadoop process.png)
-
 ---
 
 ## Prerequisites
