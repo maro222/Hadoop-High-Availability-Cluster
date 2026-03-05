@@ -25,7 +25,7 @@ This project sets up a fully functional **Hadoop High Availability cluster** usi
 
 > 🔗 [View Interactive Diagram](https://maro222.github.io/Hadoop-High-Availability-Cluster/media)
 
-![Cluster Diagram](./media/hadoop-Design-architecture.png)
+![Cluster Diagram](./media/Hadoop-Design-architecture.png)
 ![Cluster Diagram](./media/order-of-hadoop-process.png)
 ---
 
