@@ -8,7 +8,7 @@
 
 This project sets up a fully functional **Hadoop High Availability cluster** using Docker containers. It covers HDFS HA, YARN HA, ZooKeeper quorum, and JournalNodes — with automatic failover enabled.
 
-## The README is an overview of the project; for more detail please check the Documentation folder ![Cluster Documentation](./Documentation)
+### The README is an overview of the project; for more detail please check the Documentation folder ![Cluster Diagram](./Documentation)
 ---
 
 ## Cluster Architecture
